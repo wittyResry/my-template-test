@@ -25,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
+import com.mytest.common.utils.LogUtil;
 
 /**
  * @author liqingyu
@@ -56,9 +57,9 @@ public class StreamTest {
         List<Integer> list = Arrays.asList();
         //通过reduce方法得到一个Optional类
         int a = list.stream().reduce(Integer::sum).orElse(get("a"));
-        System.out.println(a);
+        LogUtil.info(LogUtil.getCurrentLog(), "a=%d", a);
         int b = list.stream().reduce(Integer::sum).orElseGet(() -> get("b"));
-        System.out.println(b);
+        LogUtil.info(LogUtil.getCurrentLog(), "b=%d", b);
 //        a执行了方法
 //        1
 //        b执行了方法
@@ -71,12 +72,12 @@ public class StreamTest {
         //通过reduce方法得到一个Optional类
         int a =  list.stream().reduce(Integer::sum).orElse(get("a"));
         int b =  list.stream().reduce(Integer::sum).orElseGet(() -> get("b"));
-        System.out.println("a  "+a);
-        System.out.println("b  "+b);
+        LogUtil.info(LogUtil.getCurrentLog(), "a  "+a);
+        LogUtil.info(LogUtil.getCurrentLog(), "b  "+b);
     }
 
     public static int get(String name) {
-        System.out.println(name + "执行了方法");
+        LogUtil.info(LogUtil.getCurrentLog(), name + "执行了方法");
         return 1;
     }
 }
