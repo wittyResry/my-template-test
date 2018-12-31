@@ -16,11 +16,13 @@
  */
 package com.mytest.http;
 
+import com.mytest.common.domain.ToString;
+
 /**
  * @author liqingyu
  * @since 2018/12/28
  */
-public class HttpResult {
+public class HttpResult extends ToString {
 
     /** http×´Ì¬Âë */
     private int    statusCode;

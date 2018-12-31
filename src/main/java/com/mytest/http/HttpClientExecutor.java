@@ -16,7 +16,6 @@
  */
 package com.mytest.http;
 
-import org.apache.http.HttpRequest;
 import org.apache.http.client.methods.HttpRequestBase;
 
 /**
@@ -24,5 +23,10 @@ import org.apache.http.client.methods.HttpRequestBase;
  * @since 2018/12/28
  */
 public interface HttpClientExecutor {
-    HttpRequest execute(HttpRequestBase httpRequestBase);
+    /**
+     * ÷¥––«Î«Û
+     * @param httpRequestBase
+     * @return
+     */
+    HttpResult execute(HttpRequestBase httpRequestBase);
 }

@@ -16,12 +16,22 @@
  */
 package com.mytest.http;
 
-import org.apache.http.HttpRequest;
+import javax.net.ssl.SSLContext;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.ssl.SSLContextBuilder;
+import org.apache.http.ssl.TrustStrategy;
+import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 
+import com.mytest.common.constants.SymbolConstants;
 import com.mytest.common.utils.LogUtil;
+import com.mytest.common.constants.CommonConstants;
 
 /**
  * @author liqingyu
@@ -38,8 +48,16 @@ public class HttpClientExecutorImpl implements HttpClientExecutor {
      * 构造方法
      */
     public HttpClientExecutorImpl() {
+        // 设置http线程池
+        RequestConfig requestConfig = RequestConfig.custom().setConnectionRequestTimeout(3 * 1000)
+            .setConnectTimeout(5 * 1000).setSocketTimeout(30 * 1000).build();
+        TrustStrategy trustStrategy = (arg0, arg1) -> true;
+        //httpClient设置忽略SSL（trust all）
         try {
-            LogUtil.digestLog(LOGGER, "构造HttpClientExecutorImpl");
+            SSLContext sslContext = new SSLContextBuilder().loadTrustMaterial(null, trustStrategy)
+                .build();
+            httpClient = HttpClients.custom().setDefaultRequestConfig(requestConfig)
+                .setSslcontext(sslContext).setMaxConnPerRoute(1024).setMaxConnTotal(1280).build();
         } catch (Throwable t) {
             LogUtil.error(LOGGER, t, "构造失败");
         }
@@ -47,7 +65,31 @@ public class HttpClientExecutorImpl implements HttpClientExecutor {
     }
 
     @Override
-    public HttpRequest execute(HttpRequestBase httpRequestBase) {
-        return null;
+    public HttpResult execute(HttpRequestBase httpRequestBase) {
+        HttpResponse httpResponse;
+        Throwable throwable = null;
+        HttpResult httpResult = new HttpResult(-1, "");
+        long startTime = System.currentTimeMillis();
+        try {
+            httpResponse = httpClient.execute(httpRequestBase);
+            if (httpResponse != null) {
+                HttpEntity entity = httpResponse.getEntity();
+                if (entity != null) {
+                    String responseBody = EntityUtils.toString(entity,
+                        CommonConstants.DEFAULT_CHARSET);
+                    httpResult = new HttpResult(httpResponse.getStatusLine().getStatusCode(),
+                        responseBody);
+                    EntityUtils.consume(entity);
+                }
+            }
+        } catch (Throwable t) {
+            throwable = t;
+        }
+        String logScene = httpRequestBase.getURI().toString() + SymbolConstants.EQUAL
+                          + SymbolConstants.RIGHT_ANGEL_BRACKET + httpResult.getStatusCode();
+        long elapsed = System.currentTimeMillis() - startTime;
+        LogUtil.log(LogUtil.getCurrentLog(), throwable, LogUtil.formatScene(logScene,
+            String.format("%s elapsed=%dms", httpResult.getResponse(), elapsed)));
+        return httpResult;
     }
 }
