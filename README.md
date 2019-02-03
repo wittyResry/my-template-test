@@ -1,0 +1,10 @@
+### HttpClient
+- com.mytest.http.HttpClientExecutor
+### 工具类相关
+- com.mytest.common.builder.ToSensitiveStringBuilder
+- DateUtil
+- HiddenUtils
+- LogUtil
+- ValidateUtils
+### 设计模式
+- [23种设计模式](DesignPatterns.md)
