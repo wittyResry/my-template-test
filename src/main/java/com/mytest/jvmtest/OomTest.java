@@ -31,7 +31,8 @@ import com.mytest.common.utils.LogUtil;
  * 6. 永久带在jdk1.8被移除，使用元空间代替。两者本质一致，都是对jvm方法区的实现。最大的区别在于元空间不在JVM中，而是使用本地内存
  * 7. 分代收集算法，Eden 、From Survivor，To Survivor空间
  * 8. Stack Overflow Error 和 OutOfMemoryError（本地方法栈）
- * 9. Serial、ParNew、
+ * 9. Serial、ParNew 年轻代算法
+ * 10 CMS, SerialOld 老年代算法
  *
  * @author liqingyu
  * @since 2019/02/03
@@ -46,7 +47,7 @@ public class OomTest {
      * 1、 存在内存泄露（与GC root关联，导致内存无法被回收），开始并不会内存溢出，但是运行时间长了，积少成多后，就会导致GC。
      * 2. Dump内存，通过排查方式GC root引用链，看对象占用的内存大小。
      *
-     * @param args
+     * @param args -Xms20m -Xmx20m 初始堆大小 和 最大堆大小
      */
     public static void main(String[] args) {
         List<OOMObject> list = Lists.newArrayList();
